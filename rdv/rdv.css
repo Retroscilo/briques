@@ -41,6 +41,12 @@
 
 /* --- Calendrier et créneaux ------------------------------------------------ */
 
+/* Deux colonnes, mois à gauche, heures à droite — quand le CONTENEUR est
+   assez large. C'est la largeur de la brique qui décide, pas celle de l'écran :
+   posée dans une colonne étroite sur un grand écran (une carte de visite, un
+   volet), elle repasse en une colonne. La requête sur l'écran reste en repli
+   pour les navigateurs sans requêtes de conteneur. */
+.rdv { container-type: inline-size; }
 .rdv__colonnes {
   display: grid;
   grid-template-columns: minmax(0, var(--rdv-largeur-calendrier)) minmax(0, 1fr);
@@ -48,6 +54,9 @@
   align-items: start;
 }
 @media (max-width: 640px) {
+  .rdv__colonnes { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+}
+@container (max-width: 640px) {
   .rdv__colonnes { grid-template-columns: minmax(0, 1fr); gap: 20px; }
 }
 
