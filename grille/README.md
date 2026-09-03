@@ -1,13 +1,14 @@
 # Grille interactive
 
 Une grille de fond dont la case sous le pointeur s'allume, puis s'éteint en
-traînée. Pensée pour un hero, un bandeau, une section de tête.
+traînée. De temps en temps, une case s'allume aussi toute seule. Pensée pour
+un hero, un bandeau, une section de tête.
 
 - **Deux fichiers**, `grille.css` et `grille.js`. Rien à installer, rien à
   compiler, aucune dépendance.
 - **Dégradation propre** : sans JavaScript, la grille reste peinte en CSS.
   Seules les cases allumées disparaissent.
-- **~240 lignes** commentaires compris.
+- **~300 lignes** commentaires compris.
 
 ## Emploi
 
@@ -56,6 +57,9 @@ classe modificatrice. Aucune ne demande de toucher au JavaScript.
 | `--grille-debord` | `32%` | Débord haut et bas, pour que le biais ne laisse pas d'angles vides. |
 | `--grille-allumage` | `200ms` | Voir la note ci-dessous : ne descendez pas trop. |
 | `--grille-extinction` | `900ms` | La longueur de la traînée. |
+| `--grille-scintillement` | `1400ms` | Une case s'allume seule, en moyenne toutes les… (l'intervalle varie de moitié). `0` coupe le scintillement. |
+| `--grille-lucioles` | `3` | Combien de cases peuvent briller seules en même temps. |
+| `--grille-tenue` | `600ms` | Le temps qu'une case seule reste allumée avant de s'éteindre. |
 
 ```css
 .hero--sobre {
@@ -99,10 +103,14 @@ Si vous refaites ce composant de mémoire, c'est la partie que vous perdrez.
 
 ## Détails d'implémentation
 
-- **Rien n'est créé sur écran tactile.** Le survol n'y existe pas ; poser un
-  millier de nœuds SVG pour rien serait absurde. Test :
-  `(hover: hover) and (pointer: fine)`.
-- **`prefers-reduced-motion`** coupe les transitions.
+- **Les cases du survol ne sont pas créées sur écran tactile.** Le survol
+  n'y existe pas ; poser un millier de nœuds SVG pour rien serait absurde.
+  Test : `(hover: hover) and (pointer: fine)`.
+- **Le scintillement** n'a besoin que de quelques rectangles, réutilisés et
+  déplacés à la demande dans un second calque : il tourne aussi au doigt. Il
+  se suspend quand l'onglet est caché ou la grille hors de l'écran, et
+  l'intervalle est irrégulier — régulier, ça ferait métronome.
+- **`prefers-reduced-motion`** coupe les transitions et le scintillement.
 - **Redimensionnement** : `ResizeObserver`, une reconstruction par image via
   `requestAnimationFrame`, et rien du tout si le nombre de cases n'a pas changé.
 - **Pas de `viewBox`** : une unité SVG vaut un pixel CSS, donc les cases

@@ -10,6 +10,8 @@
      .grille__lignes les lignes, peintes en CSS : la grille est là même si le
                      JavaScript ne se charge pas.
      .grille__cases  le SVG des cases, créé par grille.js et absent sans lui.
+                     Il y en a deux : les cases du survol, et le petit calque
+                     des cases qui scintillent seules (.grille__lucioles).
 
    Tout ce qui se règle passe par les variables ci-dessous : posez-les sur
    .grille-zone, sur :root, ou sur le calque lui-même. */
@@ -22,6 +24,10 @@
   --grille-debord: 32%;                        /* de quoi remplir les angles */
   --grille-allumage: 200ms;                    /* voir README : pas moins */
   --grille-extinction: 900ms;
+  --grille-scintillement: 1400ms;              /* une case seule, en moyenne
+                                                  toutes les … ; 0 pour couper */
+  --grille-lucioles: 3;                        /* combien peuvent briller à la fois */
+  --grille-tenue: 600ms;                       /* le temps qu'elle reste allumée */
 
   position: relative;
   overflow: hidden;
