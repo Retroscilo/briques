@@ -80,19 +80,27 @@
 }
 .rdv__entete {
   text-align: center;
-  font-size: 0.75em;
+  font-size: clamp(9px, 0.7em, 12px);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
+  overflow: hidden;
   color: var(--rdv-texte-doux);
   padding: 4px 0 6px;
 }
 .rdv__case {
+  /* Carrée, et JAMAIS plus large que sa colonne : la largeur vient de la
+     grille, la hauteur en découle. Une hauteur minimale fixe (36 px) forçait
+     la largeur au même 36 px par le ratio, et sur sept colonnes de 35 px les
+     cases se chevauchaient d'un pixel — visible sur un petit téléphone. */
+  width: 100%;
   aspect-ratio: 1;
-  min-height: 36px;
+  min-width: 0;
+  padding: 0;
   border: 1px solid transparent;
   border-radius: var(--rdv-rayon);
   background: transparent;
   color: var(--rdv-texte-doux);
+  font-size: clamp(12px, 0.95em, 16px);
 }
 .rdv__case--vide { visibility: hidden; }
 .rdv__case--dispo {
