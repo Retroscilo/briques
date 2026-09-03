@@ -236,10 +236,16 @@ export function creerApplication(env = lireEnv(), { maintenant = () => Date.now(
   // --- Routage ----------------------------------------------------------------
 
   const origines = new Set([env.urlPublique, ...env.origines]);
+  // Une page servie sur la machine du développeur (localhost, 127.0.0.1,
+  // n'importe quel port) est toujours admise : c'est ainsi qu'on teste le
+  // site avant de le publier. Ça ne protège rien de moins — la vérification
+  // d'origine vise les sites tiers, pas le poste de la personne elle-même.
+  const LOCALE = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/;
+  const origineAdmise = (o) => origines.has(o) || LOCALE.test(o);
 
   function cors(req, res) {
     const origine = req.headers.origin;
-    if (origine && origines.has(origine)) {
+    if (origine && origineAdmise(origine)) {
       res.setHeader('Access-Control-Allow-Origin', origine);
       res.setHeader('Vary', 'Origin');
       res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -250,7 +256,7 @@ export function creerApplication(env = lireEnv(), { maintenant = () => Date.now(
 
   function verifierOrigine(req) {
     const origine = req.headers.origin;
-    if (origine && !origines.has(origine)) throw new Erreur(403, 'origine_refusee', 'Origine non autorisée.');
+    if (origine && !origineAdmise(origine)) throw new Erreur(403, 'origine_refusee', 'Ce site n’est pas autorisé à prendre des rendez-vous ici.');
   }
 
   function ip(req) {

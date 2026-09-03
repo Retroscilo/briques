@@ -111,11 +111,24 @@
     this.statut.classList.toggle('rdv__statut--erreur', Boolean(erreur));
   };
 
+  // Toute erreur ressort avec un message en français : le navigateur, lui,
+  // ne sait dire que « Failed to fetch », et c'est ce que verrait le visiteur.
+  var MESSAGES = {
+    reseau: 'Impossible de joindre le service de rendez-vous. Vérifiez votre connexion, ou réessayez dans un instant.',
+    reponse: 'Le service de rendez-vous a répondu quelque chose d’inattendu. Réessayez dans un instant.',
+    inconnu: 'Une erreur est survenue. Réessayez dans un instant.'
+  };
   Rdv.prototype.requete = function (chemin, options) {
-    var self = this;
-    return fetch(this.api + chemin, options).then(function (rep) {
-      return rep.json().catch(function () { return {}; }).then(function (json) {
-        if (!rep.ok) { var e = new Error(json.message || 'Une erreur est survenue.'); e.type = json.erreur; throw e; }
+    return fetch(this.api + chemin, options).catch(function () {
+      var e = new Error(MESSAGES.reseau); e.type = 'reseau'; throw e;
+    }).then(function (rep) {
+      return rep.json().catch(function () { return null; }).then(function (json) {
+        if (!rep.ok) {
+          var e = new Error((json && json.message) || (rep.status >= 500 ? MESSAGES.reponse : MESSAGES.inconnu));
+          e.type = (json && json.erreur) || 'http_' + rep.status;
+          throw e;
+        }
+        if (!json) { var e2 = new Error(MESSAGES.reponse); e2.type = 'reponse'; throw e2; }
         return json;
       });
     });
