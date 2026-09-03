@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Grille interactive — démonstration</title>
+<link rel="stylesheet" href="grille.css" />
+<style>
+  /* Rien de tout ceci n'appartient au composant : c'est la page de
+     démonstration. Le composant, c'est grille.css et grille.js. */
+  body {
+    margin: 0;
+    background: #faf7f2;
+    color: #14110f;
+    font: 16px/1.55 system-ui, -apple-system, Segoe UI, Helvetica, Arial, sans-serif;
+  }
+  .demo { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+  .demo h2 { font-size: 15px; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.55; margin: 48px 0 12px; }
+  .demo p { max-width: 62ch; }
+  .hero { padding: clamp(48px, 6vw, 96px) clamp(24px, 4vw, 56px); }
+  .hero h1 { font-size: clamp(30px, 5vw, 56px); line-height: 1.05; margin: 0 0 12px; max-width: 18ch; }
+  .hero .accent { color: #de4a15; }
+  .hero .note { margin: 0; opacity: 0.6; }
+
+  /* Deuxième exemple : mêmes fichiers, autres variables. */
+  .hero--droit {
+    --grille-inclinaison: 0deg;
+    --grille-pas: 22px;
+    --grille-case: rgba(20, 110, 190, 0.16);
+    --grille-trait: rgba(20, 17, 15, 0.08);
+    --grille-debord: 0%;
+    background: #fff;
+  }
+</style>
+</head>
+<body>
+<div class="demo">
+
+  <h2>Par défaut — grille penchée</h2>
+  <div class="hero grille-zone">
+    <div class="grille" data-grille aria-hidden="true"><div class="grille__lignes"></div></div>
+    <h1>Votre titre à <span class="accent">49 €</span>, c'est tout.</h1>
+    <p class="note">Promenez le pointeur : la case sous le curseur s'allume, puis s'éteint lentement.</p>
+  </div>
+
+  <h2>Mêmes fichiers, autres variables</h2>
+  <div class="hero hero--droit grille-zone">
+    <div class="grille" data-grille aria-hidden="true"><div class="grille__lignes"></div></div>
+    <h1>Grille droite, pas plus fin, autre couleur.</h1>
+    <p class="note">Aucun JavaScript de plus : quatre variables CSS redéfinies sur le conteneur.</p>
+  </div>
+
+  <h2>Ce qu'il faut retenir</h2>
+  <p>Le survol est écouté sur le conteneur <code>.grille-zone</code>, pas sur les cases —
+     qui sont en <code>pointer-events: none</code>. C'est ce qui permet à l'effet de
+     fonctionner sous un titre pleine largeur. Passez le pointeur sur le gros titre
+     lui-même : la case dessous s'allume quand même.</p>
+  <p>Sur écran tactile, aucune case n'est créée : le survol n'existe pas, et poser
+     un millier de nœuds SVG pour rien serait absurde. La grille reste peinte en CSS.</p>
+
+</div>
+<script src="grille.js"></script>
+</body>
+</html>

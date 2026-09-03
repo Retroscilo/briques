@@ -1,0 +1,84 @@
+/* Grille interactive — styles.
+
+   Trois éléments, trois rôles :
+
+     .grille-zone    le conteneur qui capte le survol (votre hero, votre
+                     bandeau…). Il lui faut position: relative et
+                     overflow: hidden, sans quoi le calque penché déborde.
+     .grille         le calque, plus grand que la zone pour que l'inclinaison
+                     ne laisse pas d'angles vides. Ne capte jamais le pointeur.
+     .grille__lignes les lignes, peintes en CSS : la grille est là même si le
+                     JavaScript ne se charge pas.
+     .grille__cases  le SVG des cases, créé par grille.js et absent sans lui.
+
+   Tout ce qui se règle passe par les variables ci-dessous : posez-les sur
+   .grille-zone, sur :root, ou sur le calque lui-même. */
+
+.grille-zone {
+  --grille-pas: 32px;                          /* le pas de la grille */
+  --grille-trait: rgba(20, 17, 15, 0.055);     /* la couleur des lignes */
+  --grille-case: rgba(222, 74, 21, 0.1);       /* la case sous le pointeur */
+  --grille-inclinaison: -12deg;                /* 0deg pour une grille droite */
+  --grille-debord: 32%;                        /* de quoi remplir les angles */
+  --grille-allumage: 200ms;                    /* voir README : pas moins */
+  --grille-extinction: 900ms;
+
+  position: relative;
+  overflow: hidden;
+}
+
+.grille {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--grille-debord) * -1);
+  bottom: calc(var(--grille-debord) * -1);
+  z-index: 0;
+  transform: skewY(var(--grille-inclinaison));
+  pointer-events: none;
+}
+
+.grille__lignes {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--grille-trait) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grille-trait) 1px, transparent 1px);
+  background-size: var(--grille-pas) var(--grille-pas);
+}
+
+.grille__cases {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.grille__cases rect {
+  fill: transparent;
+  stroke: none;
+  /* Extinction : easeInOutCubic. Le départ en douceur évite que la traînée
+     se coupe net derrière le pointeur. */
+  transition: fill var(--grille-extinction) cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.grille__cases rect.is-on {
+  fill: var(--grille-case);
+  /* Allumage : easeOutCubic, et 200 ms plutôt que 60 — en dessous de ~150 ms
+     la courbe n'a pas le temps de s'exprimer, l'effet bascule en
+     tout-ou-rien et l'adoucissement est perdu. */
+  transition-duration: var(--grille-allumage);
+  transition-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+/* Le contenu de la zone passe au-dessus du calque. À adapter si votre
+   conteneur empile déjà des z-index. */
+.grille-zone > *:not(.grille) {
+  position: relative;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grille__cases rect,
+  .grille__cases rect.is-on { transition: none; }
+}
