@@ -136,6 +136,15 @@
 
   Rdv.prototype.charger = function () {
     var self = this;
+    // Une page ouverte comme un fichier (double-clic sur index.html) a une
+    // origine « null » : le navigateur refuse toute réponse du serveur. Le
+    // dire vaut mieux qu'un message réseau qui ferait chercher ailleurs.
+    if (window.location.protocol === 'file:' && this.api) {
+      this.dire('Cette page est ouverte comme un fichier, et le calendrier a besoin d’être servi par un site (http ou https). Ouvrez-la depuis un serveur local, ou passez par le lien ci-dessus.', true);
+      this.corps.innerHTML = '';
+      this.corps.appendChild(el('a', { 'class': 'rdv__repli', href: this.api + '/', text: 'Ouvrir la page de réservation' }));
+      return;
+    }
     this.dire('Chargement des disponibilités…');
     var maintenant = Date.now();
     var horizon = 31;
