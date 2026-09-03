@@ -1,0 +1,44 @@
+# Le module de rendez-vous, sur le même VPS que Phénomène, derrière son Caddy.
+#
+#   docker compose -f deploiement/docker-compose.yml --env-file /srv/rdv/.env up -d --build
+#
+# Le conteneur rejoint le réseau Docker EXISTANT du compose de Phénomène
+# (`deploiement_default`) : Caddy le joint par son nom, `rdv`, sans qu'aucun
+# port ne soit ouvert sur l'hôte. Le fichier de site Caddy est
+# `deploiement/rdv.caddy`, copié dans le dossier que Caddy importe.
+#
+# ⚠️ `name: rdv` est VITAL. Sans lui, Compose nomme le projet d'après le
+# dossier du fichier, « deploiement » — le même nom que le compose de
+# Phénomène. Il considère alors les conteneurs de Phénomène comme les siens :
+# un `--remove-orphans` les supprime, un `down` les arrête. C'est arrivé le
+# 03/09/2026 (une trentaine de secondes d'interruption, volumes intacts).
+name: rdv
+
+services:
+  rdv:
+    build:
+      context: ../..
+      dockerfile: serveur/deploiement/Dockerfile
+    container_name: rdv
+    restart: unless-stopped
+    init: true
+    env_file:
+      - ${RDV_ENV_FILE:-/srv/rdv/.env}
+    volumes:
+      - /srv/rdv/donnees:/donnees
+    networks:
+      - phenomene
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "3"
+
+networks:
+  phenomene:
+    external: true
+    name: deploiement_default

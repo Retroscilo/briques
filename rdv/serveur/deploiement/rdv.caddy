@@ -1,0 +1,18 @@
+# Le site du module de rendez-vous, importé par le Caddy de Phénomène
+# (`import /etc/caddy-sites/*.caddy` dans son Caddyfile). À copier dans
+# /srv/caddy-sites/ sur le VPS, puis `caddy reload`.
+rdv.synaps.re {
+	log {
+		output stdout
+		format json
+		level INFO
+	}
+	header {
+		-Server
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		Referrer-Policy same-origin
+	}
+	encode zstd gzip
+	reverse_proxy rdv:3000
+}

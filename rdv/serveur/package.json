@@ -1,0 +1,14 @@
+{
+  "name": "rdv-serveur",
+  "private": true,
+  "description": "Serveur du module de rendez-vous : API, créneaux, Google Calendar, mails. Node 24, une seule dépendance (nodemailer, pour le SMTP).",
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "start": "node serveur.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "nodemailer": "^7.0.0"
+  }
+}

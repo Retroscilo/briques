@@ -31,6 +31,7 @@ le projet cible, adapter les variables CSS au projet — **pas le JavaScript**.
 | Composant | Ce que ça fait | Poids |
 |---|---|---|
 | [`grille/`](grille/) | Grille de fond dont la case sous le pointeur s'allume, puis s'éteint en traînée. Pensée pour un hero. | 2 fichiers, ~240 lignes |
+| [`rdv/`](rdv/) | Prise de rendez-vous : calendrier de créneaux, formulaire, annulation et déplacement. La brique parle à un serveur fourni (Node + SQLite + Google Calendar), dans `rdv/serveur/`. | 2 fichiers, ~500 lignes, plus le serveur |
 
 ## Principes
 

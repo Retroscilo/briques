@@ -1,0 +1,230 @@
+/* Rendez-vous — la brique côté navigateur.
+ *
+ * Tout le réglage passe par les variables ci-dessous, à redéfinir sur `.rdv`
+ * ou sur `:root` depuis la feuille de style du site. La police est héritée
+ * de la page : la brique ne charge rien.
+ */
+.rdv {
+  --rdv-accent: #C34111;
+  --rdv-accent-texte: #fff;
+  --rdv-texte: #14110F;
+  --rdv-texte-doux: rgba(20, 17, 15, 0.62);
+  --rdv-fond: transparent;
+  --rdv-fond-case: rgba(20, 17, 15, 0.04);
+  --rdv-trait: rgba(20, 17, 15, 0.16);
+  --rdv-rayon: 6px;
+  --rdv-erreur: #B3261E;
+  --rdv-largeur-calendrier: 320px;
+
+  color: var(--rdv-texte);
+  background: var(--rdv-fond);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.45;
+}
+
+.rdv *, .rdv *::before, .rdv *::after { box-sizing: border-box; }
+.rdv button, .rdv input, .rdv select, .rdv textarea { font: inherit; color: inherit; }
+.rdv button { cursor: pointer; }
+.rdv button:disabled { cursor: default; }
+.rdv :focus-visible { outline: 2px solid var(--rdv-accent); outline-offset: 2px; }
+
+/* Sans JavaScript, seul le lien de repli existe. */
+.rdv__repli {
+  display: inline-block;
+  padding: 0.7em 1.2em;
+  border-radius: var(--rdv-rayon);
+  background: var(--rdv-accent);
+  color: var(--rdv-accent-texte);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* --- Calendrier et créneaux ------------------------------------------------ */
+
+.rdv__colonnes {
+  display: grid;
+  grid-template-columns: minmax(0, var(--rdv-largeur-calendrier)) minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+@media (max-width: 640px) {
+  .rdv__colonnes { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+}
+
+.rdv__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.rdv__mois {
+  margin: 0;
+  font-size: 1.05em;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.rdv__fleche {
+  width: 36px; height: 36px;
+  border: 1px solid var(--rdv-trait);
+  border-radius: var(--rdv-rayon);
+  background: transparent;
+  font-size: 1.3em;
+  line-height: 1;
+}
+.rdv__fleche:disabled { opacity: 0.3; }
+
+.rdv__grille {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+.rdv__entete {
+  text-align: center;
+  font-size: 0.75em;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--rdv-texte-doux);
+  padding: 4px 0 6px;
+}
+.rdv__case {
+  aspect-ratio: 1;
+  min-height: 36px;
+  border: 1px solid transparent;
+  border-radius: var(--rdv-rayon);
+  background: transparent;
+  color: var(--rdv-texte-doux);
+}
+.rdv__case--vide { visibility: hidden; }
+.rdv__case--dispo {
+  background: var(--rdv-fond-case);
+  color: var(--rdv-texte);
+  font-weight: 600;
+  border-color: var(--rdv-trait);
+}
+.rdv__case--dispo:hover { border-color: var(--rdv-accent); }
+.rdv__case--choisi, .rdv__case--choisi:hover {
+  background: var(--rdv-accent);
+  border-color: var(--rdv-accent);
+  color: var(--rdv-accent-texte);
+}
+
+.rdv__jour {
+  margin: 0 0 10px;
+  font-size: 1.05em;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.rdv__heures {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 8px;
+}
+.rdv__heure {
+  padding: 0.6em 0.4em;
+  border: 1px solid var(--rdv-trait);
+  border-radius: var(--rdv-rayon);
+  background: transparent;
+  font-weight: 600;
+}
+.rdv__heure:hover { border-color: var(--rdv-accent); color: var(--rdv-accent); }
+
+.rdv__pied {
+  margin: 18px 0 0;
+  font-size: 0.85em;
+  color: var(--rdv-texte-doux);
+}
+.rdv__fuseau {
+  max-width: 100%;
+  padding: 2px 4px;
+  border: 1px solid var(--rdv-trait);
+  border-radius: 4px;
+  background: transparent;
+  font-size: inherit;
+}
+
+.rdv__vide { color: var(--rdv-texte-doux); }
+
+/* --- Formulaire -------------------------------------------------------------- */
+
+.rdv__formulaire {
+  display: grid;
+  gap: 16px;
+  max-width: 520px;
+}
+.rdv__retour {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--rdv-accent);
+  font-weight: 600;
+}
+.rdv__resume { margin: 0; }
+
+.rdv__formats {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.rdv__option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--rdv-trait);
+  border-radius: var(--rdv-rayon);
+  cursor: pointer;
+}
+.rdv__option:has(:checked) { border-color: var(--rdv-accent); }
+.rdv__radio { accent-color: var(--rdv-accent); margin: 0; }
+
+.rdv__champ { display: grid; gap: 6px; }
+.rdv__label { font-weight: 600; font-size: 0.95em; }
+.rdv__entree {
+  width: 100%;
+  padding: 0.65em 0.8em;
+  border: 1px solid var(--rdv-trait);
+  border-radius: var(--rdv-rayon);
+  background: transparent;
+}
+.rdv__entree:focus { border-color: var(--rdv-accent); outline: none; }
+textarea.rdv__entree { resize: vertical; min-height: 5em; }
+
+/* Le pot de miel : hors écran, jamais `display: none` (certains robots le
+ * respectent) ni `visibility: hidden` (certains navigateurs ne remplissent
+ * pas). */
+.rdv__hp {
+  position: absolute;
+  left: -10000px;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  margin: 0;
+}
+
+.rdv__envoyer {
+  justify-self: start;
+  padding: 0.75em 1.4em;
+  border: 0;
+  border-radius: var(--rdv-rayon);
+  background: var(--rdv-accent);
+  color: var(--rdv-accent-texte);
+  font-weight: 600;
+}
+.rdv__envoyer:disabled { opacity: 0.6; }
+
+.rdv__statut { min-height: 1.4em; margin: 12px 0 0; color: var(--rdv-texte-doux); }
+.rdv__statut:empty { margin: 0; min-height: 0; }
+.rdv__statut--erreur { color: var(--rdv-erreur); }
+
+/* --- Succès ----------------------------------------------------------------- */
+
+.rdv__succes { display: grid; gap: 8px; max-width: 520px; }
+.rdv__succes p { margin: 0; }
+.rdv__titre-succes { margin: 0 0 4px; font-size: 1.25em; }
+.rdv__succes a { color: var(--rdv-accent); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .rdv__case, .rdv__heure, .rdv__option { transition: border-color 120ms ease, background-color 120ms ease; }
+}

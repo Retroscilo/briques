@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rendez-vous — démonstration</title>
+  <link rel="stylesheet" href="rdv.css" />
+  <style>
+    body { margin: 0; background: #F4F1E9; color: #14110F; font-family: system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; line-height: 1.5; }
+    main { max-width: 900px; margin: 0 auto; padding: 48px 24px 96px; }
+    h1 { font-size: 30px; margin: 0 0 6px; font-weight: 600; }
+    .note { color: rgba(20, 17, 15, 0.65); margin: 0 0 36px; max-width: 60ch; }
+    h2 { font-size: 18px; margin: 56px 0 16px; }
+    .sombre { background: #14110F; color: #F4F1E9; padding: 32px; border-radius: 10px; }
+    .rdv--sombre {
+      --rdv-texte: #F4F1E9;
+      --rdv-texte-doux: rgba(244, 241, 233, 0.6);
+      --rdv-trait: rgba(244, 241, 233, 0.2);
+      --rdv-fond-case: rgba(244, 241, 233, 0.06);
+      --rdv-accent: #E4602E;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Rendez-vous</h1>
+    <p class="note">La brique tourne ici sur un faux serveur en mémoire : les créneaux sont générés pour les prochaines semaines, la réservation « réussit » sans rien envoyer. Ouvrez la console pour voir les appels.</p>
+
+    <div class="rdv" data-rdv="">
+      <a class="rdv__repli" href="#">Prendre rendez-vous</a>
+    </div>
+
+    <h2>La même, sur fond sombre, quatre variables changées</h2>
+    <div class="sombre">
+      <div class="rdv rdv--sombre" data-rdv="">
+        <a class="rdv__repli" href="#">Prendre rendez-vous</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Un faux serveur : intercepte fetch() sur /api/* et répond comme le vrai.
+    // Lundi–vendredi, 9 h–12 h et 14 h–17 h heure de La Réunion (UTC+4),
+    // créneaux de 30 min, à partir de demain, sur 30 jours.
+    (function () {
+      var reel = window.fetch;
+      var pris = {};
+      function creneaux() {
+        var liste = [];
+        var t = Date.now() + 86400000;
+        for (var j = 0; j < 30; j++) {
+          var jour = new Date(t + j * 86400000);
+          var y = jour.getUTCFullYear(), m = jour.getUTCMonth(), d = jour.getUTCDate();
+          var js = new Date(Date.UTC(y, m, d)).getUTCDay();
+          if (js === 0 || js === 6) continue;
+          [[9, 12], [14, 17]].forEach(function (plage) {
+            for (var h = plage[0]; h < plage[1]; h += 0.5) {
+              var instant = Date.UTC(y, m, d, Math.floor(h) - 4, (h % 1) * 60);
+              if (!pris[instant]) liste.push(new Date(instant).toISOString());
+            }
+          });
+        }
+        return liste;
+      }
+      function reponse(code, corps) {
+        return Promise.resolve(new Response(JSON.stringify(corps), { status: code, headers: { 'Content-Type': 'application/json' } }));
+      }
+      window.fetch = function (url, options) {
+        var u = String(url);
+        console.log('[faux serveur]', (options && options.method) || 'GET', u, options && options.body);
+        if (u.indexOf('/api/reglages') === 0) return reponse(200, { duree: 30, fuseau: 'Indian/Reunion', titre: 'Premier échange', proprietaire: 'Démo', horizonJours: 30, preavisMinutes: 1440 });
+        if (u.indexOf('/api/creneaux') === 0) return reponse(200, { creneaux: creneaux(), duree: 30, fuseau: 'Indian/Reunion' });
+        if (u.indexOf('/api/reservations') === 0) {
+          var corps = JSON.parse(options.body || '{}');
+          var debut = Date.parse(corps.debut);
+          if (pris[debut]) return reponse(409, { erreur: 'creneau_indisponible', message: 'Ce créneau n\'est plus disponible.' });
+          pris[debut] = true;
+          var uid = 'demo' + String(debut).slice(-18);
+          return reponse(201, { uid: uid, url: '#/r/' + uid, debut: corps.debut, fin: new Date(debut + 1800000).toISOString(), lienVisio: corps.format === 'visio' ? 'https://meet.google.com/xxx-demo-xxx' : null });
+        }
+        return reel.apply(this, arguments);
+      };
+    })();
+  </script>
+  <script src="rdv.js"></script>
+</body>
+</html>

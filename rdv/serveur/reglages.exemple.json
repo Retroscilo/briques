@@ -1,0 +1,22 @@
+{
+  "fuseau": "Indian/Reunion",
+  "duree": 30,
+  "pas": 30,
+  "margeAvant": 15,
+  "margeApres": 15,
+  "preavisMinutes": 1440,
+  "horizonJours": 30,
+  "maxParJour": 4,
+  "confirmationAutomatique": true,
+  "rappelsMinutes": [1440, 60],
+  "conservationJours": 365,
+  "titre": "Premier échange",
+  "horaires": [
+    { "jours": [1, 2, 3, 4, 5], "debut": "09:00", "fin": "12:00" },
+    { "jours": [1, 2, 3, 4, 5], "debut": "14:00", "fin": "17:00" }
+  ],
+  "exceptions": [
+    { "date": "2026-12-25", "plages": [] },
+    { "date": "2026-09-12", "plages": [{ "debut": "10:00", "fin": "12:00" }] }
+  ]
+}
