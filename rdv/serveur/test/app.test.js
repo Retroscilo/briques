@@ -115,7 +115,7 @@ test('réserver : succès, puis le créneau disparaît, puis conflit', async () 
 
 test('le pot de miel renvoie un faux succès sans rien créer', async () => {
   const avant = app.base.db.prepare('SELECT count(*) AS n FROM reservations').get().n;
-  const r = await post('/api/reservations', { ...visiteur, debut: '2026-09-07T07:00:00Z', entreprise: 'ACME' });
+  const r = await post('/api/reservations', { ...visiteur, debut: '2026-09-07T07:00:00Z', 'ne-pas-remplir': 'ACME' });
   assert.equal(r.status, 201);
   assert.equal((await r.json()).uid, 'ok');
   assert.equal(app.base.db.prepare('SELECT count(*) AS n FROM reservations').get().n, avant);

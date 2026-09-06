@@ -333,8 +333,12 @@ export function creerApplication(env = lireEnv(), { maintenant = () => Date.now(
       verifierOrigine(req);
       if (!limiteur.autoriser(`r:${ip(req)}`, LIMITE_ECRITURE, 60 * MINUTE, maintenant())) throw new Erreur(429, 'trop_de_requetes', 'Trop de demandes depuis cette adresse. Réessayez plus tard.');
       const d = await lireJson(req);
-      // Pot de miel : un robot qui remplit « entreprise » reçoit un faux succès.
-      if (texte(d.entreprise, 500)) return json(res, 201, { uid: 'ok', url: `${env.urlPublique}/` });
+      /* Pot de miel : un robot qui le remplit reçoit un faux succès.
+         Le champ s'appelait « entreprise », un mot que Chrome reconnaît comme un
+         nom de société et remplit automatiquement — `autocomplete=off` étant
+         ignoré pour les fiches contact. Des visiteurs réels recevaient donc une
+         confirmation sans qu'aucun rendez-vous ne soit créé. */
+      if (texte(d['ne-pas-remplir'], 500)) return json(res, 201, { uid: 'ok', url: `${env.urlPublique}/` });
       const debut = instant(d.debut);
       const format = d.format === 'telephone' ? 'telephone' : d.format === 'visio' ? 'visio' : null;
       if (!format) throw new Erreur(400, 'format_invalide', 'Choisissez visio ou téléphone.');

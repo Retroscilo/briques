@@ -323,15 +323,19 @@
       champ('email', 'Votre e-mail', 'email', { autocomplete: 'email', required: '', inputmode: 'email' }),
       champ('telephone', 'Votre téléphone', 'tel', { autocomplete: 'tel', inputmode: 'tel', placeholder: '06 92 00 00 00' }),
       champ('message', 'En deux mots, de quoi voulez-vous parler ? (facultatif)', 'textarea', {}),
-      // Pot de miel : invisible pour une personne, rempli par les robots.
-      el('p', { 'class': 'rdv__hp', 'aria-hidden': 'true' }, [el('label', {}, ['Ne remplissez pas ce champ : ', el('input', { name: 'entreprise', tabindex: '-1', autocomplete: 'off' })])]),
+      /* Pot de miel : invisible pour une personne, rempli par les robots.
+         Le champ ne s'appelle PAS « entreprise » : ce mot figure dans les motifs
+         d'autofill « nom de societe » de Chrome, et `autocomplete=off` est ignore
+         pour les fiches contact. Le navigateur le remplissait donc tout seul, et
+         le serveur renvoyait un faux succes a un visiteur bien reel. */
+      el('p', { 'class': 'rdv__hp', 'aria-hidden': 'true' }, [el('label', {}, ['Ne remplissez pas ce champ : ', el('input', { name: 'ne-pas-remplir', tabindex: '-1', autocomplete: 'off' })])]),
       el('button', { 'class': 'rdv__envoyer', type: 'submit', text: 'Confirmer le rendez-vous' })
     ]);
 
     form.addEventListener('submit', function (ev) {
       ev.preventDefault();
       var d = {};
-      ['format', 'nom', 'email', 'telephone', 'message', 'entreprise'].forEach(function (k) {
+      ['format', 'nom', 'email', 'telephone', 'message', 'ne-pas-remplir'].forEach(function (k) {
         var champ = form.querySelector('[name="' + k + '"]:checked, [name="' + k + '"]:not([type=radio])');
         d[k] = champ ? champ.value.trim() : '';
       });

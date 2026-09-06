@@ -116,7 +116,7 @@ Si vous refaites ce composant de mémoire, c'est la partie que vous perdrez.
   jour et le fuseau se changent sans recharger.
 - **Un créneau pris entre-temps** renvoie `creneau_indisponible` : la brique
   le dit, recharge les disponibilités et revient au calendrier.
-- **Le pot de miel** (`entreprise`) est placé hors écran, jamais en
+- **Le pot de miel** (`ne-pas-remplir`) est placé hors écran, jamais en
   `display: none` : certains robots respectent ce dernier.
 - **Le formulaire** valide avant d'envoyer, mais c'est le serveur qui fait
   foi : il revérifie tout, y compris que l'instant demandé est bien un
